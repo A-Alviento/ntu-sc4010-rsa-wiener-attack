@@ -100,11 +100,11 @@ def gen_vulnerable_keys(nbits, s):
     n = p * q # calculate rsa modulus
     phi = (p-1) * (q-1) # calculent totient of n
 
-    # generate d such that d is coprime to phi and 36d^4 < n
+    # generate d such that d is coprime to phi and 81d^4 < n
     flag = False
     while not flag:
         d = random.getrandbits(nbits//4) # generate a random number with 1/4th the bit length of n
-        if (gcd(d, phi) == 1 and 36 * pow(d, 4) < n):
+        if (gcd(d, phi) == 1 and 81 * pow(d, 4) < n):
             flag = True
     
     e = pow(d, -1, phi) # calculate the public exponent e as the modular inverse of d modulo phi(n)
@@ -112,4 +112,20 @@ def gen_vulnerable_keys(nbits, s):
     return e, n, d, phi, p, q
 
 
+# generate vulnerable keys with more precise wiener's bound
+def gen_vulnerable_keys_v2(nbits, s):
+    p, q = getPrimePair(nbits//2, s)
+    n = p * q # calculate rsa modulus
+    phi = (p-1) * (q-1) # calculent totient of n
+
+    # generate d such that d is coprime to phi and 18d^4 < n
+    flag = False
+    while not flag:
+        d = random.getrandbits(nbits//4) # generate a random number with 1/4th the bit length of n
+        if (gcd(d, phi) == 1 and 18 * pow(d, 4) < n):
+            flag = True
+
+    e = pow(d, -1, phi) # calculate the public exponent e as the modular inverse of d modulo phi(n)
+
+    return e, n, d, phi, p, q
 
