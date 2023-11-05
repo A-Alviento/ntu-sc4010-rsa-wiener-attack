@@ -6,6 +6,9 @@ def miller_rabin(p_candidate, s):
     p_candidate - 1 = 2^u * r 
     s is the security parameter, i.e. the number of iterations
     '''
+    if p_candidate < s:
+        raise ValueError("p_candidate must be greater than s")
+    
     # get s random numbers, a in [2, p_candidate - 2]
     a = []
     for i in range(s):
