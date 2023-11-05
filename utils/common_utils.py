@@ -11,11 +11,8 @@ def miller_rabin(p_candidate, s):
     
     # get s random numbers, a in [2, p_candidate - 2]
     a = []
-    for i in range(s):
-        a_tmp = random.randint(2, p_candidate - 2)
-        while a_tmp in a:
-            a_tmp = random.randint(2, p_candidate - 2)
-        a.append(a_tmp)
+    # generate s unique random numbers from [2, p_candidate - 2]
+    a = random.sample(range(2, p_candidate - 1), s)
 
     # compute r such that p_candidate - 1 = 2^u * r, with r odd
     r = p_candidate - 1
