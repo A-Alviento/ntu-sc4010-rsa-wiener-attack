@@ -95,7 +95,7 @@ def gcd(a, b):
 
 
 # generate keys 
-def gen_vulnerable_keys(nbits):
+def gen_vulnerable_keys(nbits, s):
     p, q = getPrimePair(nbits//2, s)
     n = p * q # calculate rsa modulus
     phi = (p-1) * (q-1) # calculent totient of n
@@ -103,7 +103,7 @@ def gen_vulnerable_keys(nbits):
     # generate d such that d is coprime to phi and 36d^4 < n
     flag = False
     while not flag:
-        d = random.getrandbits(nbits//4, s) # generate a random number with 1/4th the bit length of n
+        d = random.getrandbits(nbits//4) # generate a random number with 1/4th the bit length of n
         if (gcd(d, phi) == 1 and 36 * pow(d, 4) < n):
             flag = True
     
