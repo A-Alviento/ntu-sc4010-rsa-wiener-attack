@@ -65,3 +65,51 @@ def gen_prime(nbits, s):
 
         if miller_rabin(p_candidate, s):
             return p_candidate
+
+
+# generate a prime number in the range [start, stop]
+def gen_prime_range(start, stop, s):
+    while True:
+        p_candidate = random.randint(start, stop) # generate a random number in the range [start, stop]
+
+        # force p_candidate to be odd
+        p_candidate |= 1 # this is equivalent to p_candidate = p_candidate | 1 where | is the bitwise OR operator
+
+        if miller_rabin(p_candidate, s):
+            return p_candidate
+        
+
+# generate a prime pair (p, q) such that p < q < 2p
+def getPrimePair(nbits):
+    p = gen_prime(nbits)
+    q = gen_prime_range(p+1, 2*p)
+
+    return p, q
+
+
+# gcd
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+
+# generate keys 
+def gen_vulnerable_keys(nbits):
+    p, q = getPrimePair(nbits//2)
+    n = p * q # calculate rsa modulus
+    phi = (p-1) * (q-1) # calculent totient of n
+
+    # generate d such that d is coprime to phi and 36d^4 < n
+    flag = False
+    while not flag:
+        d = random.getrandbits(nbits//4) # generate a random number with 1/4th the bit length of n
+        if (gcd(d, phi) == 1 and 36 * pow(d, 4) < n):
+            flag = True
+    
+    e = pow(d, -1, phi) # calculate the public exponent e as the modular inverse of d modulo phi(n)
+
+    return e, n, d
+
+
+
