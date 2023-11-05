@@ -63,19 +63,19 @@ def gen_prime(nbits, s):
         # force p_candidate to have nbits and be odd
         p_candidate |= 2**nbits | 1 # this is equivalent to p_candidate = p_candidate | 2**nbits | 1 where | is the bitwise OR operator
 
-        if miller_rabin(p_candidate, s):
+        if miller_rabin(p_candidate, s)[0]:
             return p_candidate
 
 
 # generate a prime number in the range [start, stop]
 def gen_prime_range(start, stop, s):
     while True:
-        p_candidate = random.randint(start, stop) # generate a random number in the range [start, stop]
+        p_candidate = random.randint(start, stop-1) # generate a random number in the range [start, stop]
 
         # force p_candidate to be odd
         p_candidate |= 1 # this is equivalent to p_candidate = p_candidate | 1 where | is the bitwise OR operator
 
-        if miller_rabin(p_candidate, s):
+        if miller_rabin(p_candidate, s)[0]:
             return p_candidate
         
 
@@ -109,7 +109,7 @@ def gen_vulnerable_keys(nbits, s):
     
     e = pow(d, -1, phi) # calculate the public exponent e as the modular inverse of d modulo phi(n)
 
-    return e, n, d
+    return e, n, d, phi, p, q
 
 
 
