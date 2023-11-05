@@ -1,4 +1,5 @@
 import random
+import time
 
 # one pass of miller rabin test
 def miller_rabin(p_candidate, s):
@@ -6,6 +7,8 @@ def miller_rabin(p_candidate, s):
     p_candidate - 1 = 2^u * r 
     s is the security parameter, i.e. the number of iterations
     '''
+    start_time = time.time() # start timer
+
     if p_candidate < s+3:
         raise ValueError("p_candidate must be greater than s")
     
@@ -33,6 +36,8 @@ def miller_rabin(p_candidate, s):
                     break # fails composite test
                 
             if z != p_candidate - 1: # means we didn't break out of the loop and thus no -1 was found
-                return False # composite
-
-    return True # likely prime
+                end_time = time.time()
+                return False, end_time-start_time # composite
+    
+    end_time = time.time()
+    return True, end_time-start_time # likely prime
