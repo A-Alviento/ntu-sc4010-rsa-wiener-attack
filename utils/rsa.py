@@ -1,4 +1,5 @@
 import random
+import time
 
 # this function makes it easier to calculate large numbers (exponentiation by squaring)
 def modBig(num, pow, mod):
@@ -84,6 +85,7 @@ def convergents(cf):
 
 
 def wiener_atk(e, n, original_d):
+    start_time = time.time() # start timer
     potential_d = [] # List to store potential private keys
     cf = []  # List to store the continued fraction representation.
     
@@ -105,12 +107,14 @@ def wiener_atk(e, n, original_d):
                 print("Decrypted, attack worked!")
 
         potential_d.append(d)
-            
-    return potential_d
+    
+    end_time = time.time()
+    return potential_d, end_time-start_time
 
 
 def check_private_key(potential_d, e, n):
     # get random integer
+    start_time = time.time() # start timer
     M = random.randint(1, 1000)
     correct_d = -1
     for d in potential_d:
@@ -119,4 +123,5 @@ def check_private_key(potential_d, e, n):
             break
     if correct_d == -1:
         print("Could not find correct private key")
-    return correct_d
+    end_time = time.time()
+    return correct_d, end_time-start_time
