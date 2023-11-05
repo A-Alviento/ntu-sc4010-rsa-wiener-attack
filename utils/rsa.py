@@ -1,3 +1,5 @@
+import random
+
 # this function makes it easier to calculate large numbers (exponentiation by squaring)
 def modBig(num, pow, mod):
     result = 1 # Initialize the result to 1
@@ -29,7 +31,7 @@ def encrypt(message, n, e, block_size = 2):
 
         # multiply by 1000 to shift the digits over to the left by 3 places since ASCII codes are a max of 3 digits in decimal; then add the ASCII code of the current character (xxx -> xxx000 + yyy = xxxyyy)
         ciphertext = ciphertext * 1000 + ord(message[i])
-        
+
     # add the last block to the list
     encrypted_blocks.append(ciphertext)
 
@@ -68,3 +70,53 @@ def decrypt(blocks, n, d, block_size = 2):
         message += tmp
 
     return message
+
+
+# Function to calculate convergents from the continued fraction.
+def convergents(cf):
+    convs = []
+    for i in range(1, len(cf) + 1):
+        num, den = 1, 0
+        for x in reversed(cf[:i]):
+            num, den = den + num * x, num
+        convs.append((num, den))
+    return convs
+
+
+def wiener_atk(e, n, original_d):
+    potential_d = [] # List to store potential private keys
+    cf = []  # List to store the continued fraction representation.
+    
+    # Calculate the continued fraction representation. 
+    while n != 0:
+        cf.append(e // n)
+        e, n = n, e % n
+
+    # For each convergent   
+    for (k, d) in convergents(cf):
+        if k == 0:
+            continue
+
+        # If d is even or phi(n) isn't an integer, continue to the next convergent
+        if d % 2 == 0 or (e * d - 1) % k == 0:
+            continue 
+
+        if d == original_d:
+                print("Decrypted, attack worked!")
+
+        potential_d.append(d)
+            
+    return potential_d
+
+
+def check_private_key(potential_d, e, n):
+    # get random integer
+    M = random.randint(1, 1000)
+    correct_d = -1
+    for d in potential_d:
+        if modBig(modBig(M, e, n), d, n) == M: # this is equivalent to M^ed mod n == M, since ed = 1 mod phi(n)
+            correct_d = d
+            break
+    if correct_d == -1:
+        print("Could not find correct private key")
+    return correct_d
