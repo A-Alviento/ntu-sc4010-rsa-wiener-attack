@@ -1,6 +1,14 @@
 import random
 import time
 
+# generate unique random numbers
+def gen_unique_random_numbers(count, range_start, range_end):
+    unique_numbers = set()
+    while len(unique_numbers) < count:
+        unique_numbers.add(random.randint(range_start, range_end))
+    return list(unique_numbers)
+
+
 # one pass of miller rabin test
 def miller_rabin(p_candidate, s):
     '''
@@ -15,7 +23,7 @@ def miller_rabin(p_candidate, s):
     # get s random numbers, a in [2, p_candidate - 2]
     a = []
     # generate s unique random numbers from [2, p_candidate - 2]
-    a = random.sample(range(2, p_candidate - 1), s)
+    a = gen_unique_random_numbers(s, 2, p_candidate - 2)
 
     # compute r such that p_candidate - 1 = 2^u * r, with r odd
     r = p_candidate - 1
@@ -41,3 +49,19 @@ def miller_rabin(p_candidate, s):
     
     end_time = time.time()
     return True, end_time-start_time # likely prime
+
+
+# generate a prime number of nbits bits
+def gen_prime(nbits, s):
+    '''
+    nbits - number of bits of the prime number
+    s - number of iterations of the miller rabin test
+    '''
+    while True:
+        p_candidate = random.getrandbits(nbits) # generate a random number of nbits bits
+
+        # force p_candidate to have nbits and be odd
+        p_candidate |= 2**nbits | 1 # this is equivalent to p_candidate = p_candidate | 2**nbits | 1 where | is the bitwise OR operator
+
+        if miller_rabin(p_candidate, s):
+            return p_candidate
