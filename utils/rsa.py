@@ -1,5 +1,4 @@
 import random
-import time
 
 # this function makes it easier to calculate large numbers (exponentiation by squaring)
 def modBig(num, pow, mod):
@@ -76,16 +75,26 @@ def decrypt(blocks, n, d, block_size = 2):
 # Function to calculate convergents from the continued fraction.
 def convergents(cf):
     convs = []
-    for i in range(1, len(cf) + 1):
-        num, den = 1, 0
-        for x in reversed(cf[:i]):
-            num, den = den + num * x, num
-        convs.append((num, den))
+    num1, num2 = 1, 0  # initial numerators
+    den1, den2 = 0, 1  # initial denominators
+
+    for x in cf:
+        # The new numerator and denominator are calculated based on the previous two convergents.
+        a = x * num1 + num2
+        b = x * den1 + den2
+
+        # Update the last two numerators and denominators
+        num2, num1 = num1, a
+        den2, den1 = den1, b
+
+        convs.append((a, b))
+
     return convs
 
 
+
 def wiener_atk(e, n, original_d):
-    start_time = time.time() # start timer
+    ops = 0 # number of operations
     potential_d = [] # List to store potential private keys
     cf = []  # List to store the continued fraction representation.
     
@@ -93,28 +102,29 @@ def wiener_atk(e, n, original_d):
     while n != 0:
         cf.append(e // n)
         e, n = n, e % n
+        ops += 1
+        
+    
+    convergent_list = convergents(cf)
+    ops += len(cf)
 
     # For each convergent   
-    for (k, d) in convergents(cf):
-        if k == 0:
+    for (k, d) in convergent_list:
+        if k == 0 or d % 2 == 0: # If k is 0 or d is even,
             continue
-
-        # If d is even or phi(n) isn't an integer, continue to the next convergent
-        if d % 2 == 0 or (e * d - 1) % k == 0:
-            continue 
 
         if d == original_d:
                 print("Decrypted, attack worked!")
 
         potential_d.append(d)
-    
-    end_time = time.time()
-    return potential_d, end_time-start_time
+        ops += 1
+    ops += len(convergent_list)
+
+    return potential_d, ops
 
 
 def check_private_key(potential_d, e, n):
     # get random integer
-    start_time = time.time() # start timer
     M = random.randint(1, 1000)
     correct_d = -1
     for d in potential_d:
@@ -123,5 +133,4 @@ def check_private_key(potential_d, e, n):
             break
     if correct_d == -1:
         print("Could not find correct private key")
-    end_time = time.time()
-    return correct_d, end_time-start_time
+    return correct_d
