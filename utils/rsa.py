@@ -113,8 +113,8 @@ def wiener_atk(e, n, original_d):
         if k == 0 or d % 2 == 0: # If k is 0 or d is even,
             continue
 
-        if d == original_d:
-                print("Decrypted, attack worked!")
+        # if d == original_d:
+                # print("Decrypted, attack worked!")
 
         potential_d.append(d)
         ops += 1
